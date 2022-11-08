@@ -1,13 +1,15 @@
 from flask import Blueprint, jsonify, abort, make_response, request
 from app import db
-from app.models.book import Book 
+from app.models.book import Book
+from app.models.author import Author
 
-books_bp = Blueprint("books", __name__, url_prefix="/books")  
+books_bp = Blueprint("books", __name__, url_prefix="/books")
+authors_bp = Blueprint("authors", __name__, url_prefix="/authors")  
 
 @books_bp.route("", methods=["POST"])
 def create_book():
     request_body = request.get_json()
-    new_book = Book(title=request_body["title"], description=request_body["description"])
+    new_book = Book.from_dict(request_body)
 
     db.session.add(new_book)
     db.session.commit()
@@ -67,6 +69,28 @@ def delete_book(book_id):
     db.session.commit()
 
     return make_response(f"Book {book_id} successfully deleted")
+
+@authors_bp.route("", methods=["GET"])
+def read_all_authors():
+    authors = Author.query.all()
+    
+    authors_response = []
+    for author in authors:
+        authors_response.append(author.to_dict())
+
+    return jsonify(authors_response)
+
+@authors_bp.route("", methods=["POST"])
+def create_author():
+    request_body = request.get_json()
+    new_author = Author.from_dict(request_body)
+
+    db.session.add(new_author)
+    db.session.commit()
+
+    return make_response(jsonify(f"Author {new_author.name} successfully created", 201))
+
+
 
 
 
