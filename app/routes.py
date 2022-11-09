@@ -54,11 +54,13 @@ def update_book(book_id):
     chosen_book = validate_book(book_id)
     request_body = request.get_json()
 
-    chosen_book.title = request_body["title"]
-    chosen_book.description = request_body["description"]
+    try:
+        chosen_book.title = request_body["title"]
+        chosen_book.description = request_body["description"]
+    except KeyError:
+        return jsonify({"msg": "Missing needed data"}), 400
 
     db.session.commit()
-
     return make_response(f"Book {book_id} successfully updated")
 
 @books_bp.route("/<book_id>", methods=["DELETE"])
@@ -89,6 +91,9 @@ def create_author():
     db.session.commit()
 
     return make_response(jsonify(f"Author {new_author.name} successfully created", 201))
+
+# @authors_bp.route("</author_id>/books", methods=["POST"])
+# def create_book(author_id):
 
 
 
