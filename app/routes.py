@@ -103,13 +103,13 @@ def create_author():
 
 @authors_bp.route("/<author_id>/books", methods=["POST"])
 def create_book(author_id):
-    author = validate_model(Author, author_id)
+    chosen_author = validate_model(Author, author_id)
 
     request_body = request.get_json()
     new_book = Book(
-        title = request_body["title"],
-        description = request_body["description"],
-        author=author
+        title=request_body["title"],
+        description=request_body["description"],
+        author=chosen_author
     )
 
     db.session.add(new_book)
@@ -119,10 +119,10 @@ def create_book(author_id):
 
 @authors_bp.route("/<author_id>/books", methods=["GET"])
 def read_books(author_id):
-    author = validate_model(Author, author_id)
+    chosen_author = validate_model(Author, author_id)
 
     books_response = []
-    for book in author.books:
+    for book in chosen_author.books:
         books_response.append(book.to_dict())
 
     return jsonify(books_response)
