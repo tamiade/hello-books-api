@@ -99,6 +99,8 @@ def create_author():
 
     return jsonify(f"Author {new_author.name} successfully created"), 201
 
+# ***************************** NESTED ROUTES FOR BOOKS AND AUTHORS *********************************
+
 @authors_bp.route("/<author_id>/books", methods=["POST"])
 def create_book(author_id):
     author = validate_model(Author, author_id)
