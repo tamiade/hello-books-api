@@ -8,18 +8,20 @@ def validate_model(cls, model_id):
     try:
         model = int(model_id)
     except:
-        abort(make_response({"message":f"{cls.__name__} {model_id} invalid"}, 400))
+        abort(make_response({"message": f"{cls.__name__} {model_id} invalid"}, 400))
 
     model = cls.query.get(model_id)
 
     if not model:
-        abort(make_response({"message":f"{cls.__name__} {model_id} not found"}, 404))
+        abort(make_response({"message": f"{cls.__name__} {model_id} not found"}, 404))
 
     return model
+
 
 # ************************************ CRUD ROUTES FOR BOOKS ********************************
 
 books_bp = Blueprint("books", __name__, url_prefix="/books")
+
 
 @books_bp.route("", methods=["POST"])
 def create_book():
@@ -52,6 +54,7 @@ def read_one_book(book_id):
 
     return chosen_book.to_dict()
 
+
 @books_bp.route("/<book_id>", methods=["PUT"])
 def update_book(book_id):
     chosen_book = validate_model(Book, book_id)
@@ -66,6 +69,7 @@ def update_book(book_id):
     db.session.commit()
     return jsonify(f"Book {book_id} successfully updated")
 
+
 @books_bp.route("/<book_id>", methods=["DELETE"])
 def delete_book(book_id):
     chosen_book = validate_model(Book, book_id)
@@ -75,19 +79,22 @@ def delete_book(book_id):
 
     return jsonify(f"Book {book_id} successfully deleted")
 
+
 # ******************************* CRUD ROUTES FOR AUTHORS ******************************
 
-authors_bp = Blueprint("authors", __name__, url_prefix="/authors")  
+authors_bp = Blueprint("authors", __name__, url_prefix="/authors")
+
 
 @authors_bp.route("", methods=["GET"])
 def read_all_authors():
     authors = Author.query.all()
-    
+
     authors_response = []
     for author in authors:
         authors_response.append(author.to_dict())
 
     return jsonify(authors_response)
+
 
 @authors_bp.route("", methods=["POST"])
 def create_author():
@@ -99,7 +106,9 @@ def create_author():
 
     return jsonify(f"Author {new_author.name} successfully created"), 201
 
+
 # ***************************** NESTED ROUTES FOR BOOKS AND AUTHORS *********************************
+
 
 @authors_bp.route("/<author_id>/books", methods=["POST"])
 def create_book(author_id):
@@ -109,13 +118,19 @@ def create_book(author_id):
     new_book = Book(
         title=request_body["title"],
         description=request_body["description"],
-        author=chosen_author
+        author=chosen_author,
     )
 
     db.session.add(new_book)
     db.session.commit()
 
-    return jsonify(f"Book {new_book.title} by {new_book.author.name} successfully created"), 201
+    return (
+        jsonify(
+            f"Book {new_book.title} by {new_book.author.name} successfully created"
+        ),
+        201,
+    )
+
 
 @authors_bp.route("/<author_id>/books", methods=["GET"])
 def read_books(author_id):
@@ -126,10 +141,3 @@ def read_books(author_id):
         books_response.append(book.to_dict())
 
     return jsonify(books_response)
-
-
-
-
-
-
-
