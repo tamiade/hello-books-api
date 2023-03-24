@@ -28,7 +28,7 @@ def client(app):
 
 @pytest.fixture
 def two_saved_books(app):
-    #Arrange
+    # Arrange
     book_one = Book(title="Purple Hibiscus", description="Family and becoming")
     book_two = Book(title="Americanah", description="Immigration and becoming")
 
