@@ -67,7 +67,7 @@ def update_book(book_id):
         return jsonify({"msg": "Missing needed data"}), 400
 
     db.session.commit()
-    return jsonify(f"Book {book_id} successfully updated")
+    return jsonify(f"Book #{book_id} successfully updated")
 
 
 @books_bp.route("/<book_id>", methods=["DELETE"])
@@ -77,7 +77,7 @@ def delete_book(book_id):
     db.session.delete(chosen_book)
     db.session.commit()
 
-    return jsonify(f"Book {book_id} successfully deleted")
+    return jsonify(f"Book #{book_id} successfully deleted")
 
 
 # ******************************* CRUD ROUTES FOR AUTHORS ******************************
