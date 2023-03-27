@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify, abort, make_response, request
 from app import db
 from app.models.book import Book
 from app.models.author import Author
+from app.models.genre import Genre
 
 
 def validate_model(cls, model_id):
@@ -141,3 +142,30 @@ def read_books(author_id):
         books_response.append(book.to_dict())
 
     return jsonify(books_response)
+
+
+# ******************************* CRUD ROUTES FOR GENRES ******************************
+
+genres_bp = Blueprint("genres", __name__, url_prefix="/genres")
+
+
+@genres_bp.route("", methods=["POST"])
+def create_genre():
+    request_body = request.get_json()
+    new_genre = Genre.from_dict(request_body)
+
+    db.session.add(new_genre)
+    db.session.commit()
+
+    return jsonify(f"Genre {new_genre.name} successfully created"), 201
+
+
+@genres_bp.route("", methods=["GET"])
+def read_all_genres():
+    genres = Genre.query.all()
+
+    genres_response = []
+    for genre in genres_response:
+        genres_response.append(genre.to_dict())
+
+    return jsonify(genres_response)
