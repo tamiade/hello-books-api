@@ -165,7 +165,35 @@ def read_all_genres():
     genres = Genre.query.all()
 
     genres_response = []
-    for genre in genres_response:
+    for genre in genres:
         genres_response.append(genre.to_dict())
 
     return jsonify(genres_response)
+
+
+# ***************************** NESTED ROUTES FOR GENRES AND BOOKS *********************************
+
+@genres_bp.route("/<genre_id>/books", methods=["POST"])
+def create_genre_book(genre_id):
+    chosen_genre = validate_model(Genre, genre_id)
+    request_body = request.get_json()
+    new_book = Book(
+        title=request_body["title"],
+        description=request_body["description"],
+        author_id=request_body["author_id"],
+        genres=[chosen_genre])
+
+    db.session.add(new_book)
+    db.session.commit()
+
+    return jsonify(f"Book {new_book.title} by {new_book.author.name} successfully created"), 201
+
+@genres_bp.route("/<genre_id>/books", methods=["GET"])
+def read_genre_books(genre_id):
+    chosen_genre = validate_model(Genre, genre_id)
+
+    books_response = []
+    for book in chosen_genre.books:
+        books_response.append(book.to_dict())
+
+    return jsonify(books_response)
